@@ -1,13 +1,11 @@
-import 'package:fav_place/data/models/user.dart';
-import 'package:fav_place/data/models/user_local_data_source/user_local_data_source.dart';
 import 'package:fav_place/presntation/bloc/authentication_bloc_bloc.dart';
 import 'package:fav_place/presntation/pages/places_page.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:fav_place/presntation/pages/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+class FormPage extends StatefulWidget {
+  const FormPage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -19,15 +17,20 @@ class SignInPage extends StatefulWidget {
   // always marked "final".
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  State<FormPage> createState() => _FormPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _FormPageState extends State<FormPage> {
   GlobalKey<FormState> key = GlobalKey();
   TextEditingController name = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   int _counter = 0;
+  @override
+  void initState() {
+    context.read<AuthenticationBlocBloc>().add(AuthenticationIsSignedInEvent());
+    super.initState();
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -47,29 +50,17 @@ class _SignInPageState extends State<SignInPage> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Colors.white,
-          title: Text("Sign In"),
+          title: Text("Sign Up Page"),
         ),
-        body:
-            // FutureBuilder(
-            //     future: UserLocalDSImpl().hasSignUp().then((value) {
-            // if (value) {
-            //   Navigator.pushReplacement(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => PlacesPage(),
-            //       ));
-            // }
-            // }),
-            // builder: (context, snapshot) {
-            //   if (snapshot.connectionState == ConnectionState.waiting) {
-            //     return CircularProgressIndicator();
-            //   } else if (snapshot.hasError) {
-            //     return Text("${snapshot.error}");
-            //   }
-            BlocListener<AuthenticationBlocBloc, AuthenticationBlocState>(
-          listener: (context, state) {
-            // TODO: implement listener
+        body: BlocListener<AuthenticationBlocBloc, AuthenticationBlocState>(
+          listener: (context, state) async {
+            if (state is AuthenticationBlocAuthorizedState) {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => PlacesPage(),
+              ));
+            }
           },
+         
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
@@ -77,35 +68,24 @@ class _SignInPageState extends State<SignInPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("SignIn",
+                    Text("Sign Up",
                         style: Theme.of(context).textTheme.bodyMedium),
-                    // TextFormField(
-                    //      style: TextStyle(color: Colors.white),
-                    //   decoration: InputDecoration(
-                    //     hintText: " Name",
-                    //     enabledBorder: UnderlineInputBorder(
-                    //       borderSide: BorderSide(color: Colors.red),
-                    //     ),
-                    //     focusedBorder: UnderlineInputBorder(
-                    //       borderSide: BorderSide(color: Colors.red),
-                    //     ),
-                    //   ),
-                    //   validator: (String? text) {
-                    //     if (text == null || text.isEmpty) {
-                    //       return "field is requerd";
-                    //     } else {
-                    //       return null;
-                    //     }
-                    //   },
-                    //   controller: name,
-                    // ),
                     SizedBox(
                       height: 16,
                     ),
                     TextFormField(
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: " Email",
+                        icon: Icon(
+                          Icons.email,
+                          color: Colors.white,
+                        ),
+                        labelText: " Email",
+                        labelStyle: TextStyle(
+                            fontSize: 18,
+                            fontFamily: "",
+                            fontWeight: FontWeight.w300,
+                            color: Colors.white),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.red),
                         ),
@@ -132,7 +112,16 @@ class _SignInPageState extends State<SignInPage> {
                     TextFormField(
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: " password",
+                        icon: Icon(
+                          Icons.key,
+                          color: Colors.white,
+                        ),
+                        labelText: " password",
+                        labelStyle: TextStyle(
+                            fontSize: 18,
+                            fontFamily: "",
+                            fontWeight: FontWeight.w300,
+                            color: Colors.white),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.red),
                         ),
@@ -150,7 +139,23 @@ class _SignInPageState extends State<SignInPage> {
                     const SizedBox(
                       height: 32,
                     ),
-
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SignInPage(),
+                            ));
+                      },
+                      child: const Text(
+                        "Do You Have Account?",
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 15,
+                            fontFamily: ""),
+                      ),
+                    ),
                     SizedBox(
                       height: 32,
                     ),
@@ -160,7 +165,7 @@ class _SignInPageState extends State<SignInPage> {
                         onPressed: () async {
                           if (key.currentState!.validate()) {
                             context.read<AuthenticationBlocBloc>().add(
-                                AuthenticationSignInEvent(
+                                AuthenticationSignUpEvent(
                                     email: email.text,
                                     password: password.text));
                             Navigator.pushReplacement(
@@ -171,7 +176,7 @@ class _SignInPageState extends State<SignInPage> {
                           }
                         },
                         child: Text(
-                          "Sign In",
+                          "Sign Up",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,

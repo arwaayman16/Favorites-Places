@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1071230953283",
+    "project_id": "favoriteplaces12",
+    "storage_bucket": "favoriteplaces12.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1071230953283:android:229c2fe5312f3b018531f6",
+        "android_client_info": {
+          "package_name": "com.favoriteplaces.favplace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHcLvzdRKYUuxNFLfIjmMO_Q9iOTeBRL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

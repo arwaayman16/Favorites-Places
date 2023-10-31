@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:fav_place/core/image_picker_helper.dart';
+import 'package:fav_place/core/storage_helper.dart';
 import 'package:fav_place/presntation/pages/add_place.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,13 +27,11 @@ class _AddPhotoState extends State<AddPhoto> {
           children: [
             GestureDetector(
               onTap: () async {
-                file = await getImage(ImageSource.gallery);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddPlace(file: file),
-                    ));
-                setState(() {});
+                file = await ImagePickerHelperImpl()
+                    .pickImage(ImageSource.gallery);
+                String? imageUrl =
+                    await StorageHelperImpl().uploadImageFromFile(file!);
+                Navigator.pop(context, file);
               },
               child: Row(
                 children: [
@@ -42,6 +42,7 @@ class _AddPhotoState extends State<AddPhoto> {
                   Text(
                     "pick frome gallary",
                     style: TextStyle(
+                        fontFamily: "",
                         fontSize: 16,
                         color: const Color.fromARGB(172, 255, 255, 255)),
                   ),
@@ -53,16 +54,13 @@ class _AddPhotoState extends State<AddPhoto> {
             ),
             GestureDetector(
               onTap: () async {
-                file = await getImage(ImageSource.camera);
-                setState(() {
-                  file =  File(file!.path);
-                });
+                file =
+                    await ImagePickerHelperImpl().pickImage(ImageSource.camera);
+                String? imageUrl =
+                    await StorageHelperImpl().uploadImageFromFile(file!);
+                print(imageUrl);
 
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddPlace(file: file),
-                    ));
+                Navigator.pop(context, file);
               },
               child: Row(
                 children: [
@@ -73,6 +71,7 @@ class _AddPhotoState extends State<AddPhoto> {
                   Text(
                     "Take photo ",
                     style: TextStyle(
+                        fontFamily: "",
                         fontSize: 16,
                         color: const Color.fromARGB(172, 255, 255, 255)),
                   ),

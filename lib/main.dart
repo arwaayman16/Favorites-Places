@@ -1,9 +1,55 @@
-import 'package:fav_place/presntation/pages/form_page.dart';
+import 'package:fav_place/data/authentication_remot_ds.dart';
+import 'package:fav_place/data/place_remot_ds.dart';
+import 'package:fav_place/presntation/bloc/authentication_bloc_bloc.dart';
+import 'package:fav_place/presntation/bloc/place_bloc.dart';
+import 'package:fav_place/presntation/pages/google_map.dart';
 import 'package:fav_place/presntation/pages/places_page.dart';
+import 'package:fav_place/presntation/pages/sign_in_page.dart';
+import 'package:fav_place/presntation/pages/signup_page.dart';
+import 'package:fav_place/streem.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  // try {
+  //   await FirebaseMessaging.instance.requestPermission();
+  // } catch (e) {
+  //   print(e);
+  // }
+  // FirebaseMessaging.instance.subscribeToTopic("newpalce");
+  // FirebaseMessaging.onMessage.listen((event) {
+  //   print("in foreground");
+  // });
+  // FirebaseMessaging.onMessageOpenedApp.listen(
+  //   (event) => print("tapped"),
+  // );
+
+  // FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
+  // FirebaseMessaging.instance.getToken().then((value) => print(value));
+
+  // AuthenticationRemotDSImpl().signIN("arwa@gmail.com","1612222");
+//  print(await PlaceLocalDSImpl().getAllPlaces());
+  // PlaceLocalDSImpl().deletePlace("6zwi1islhdT7OMT9lNzC");
+  //updatePlace( Place(id: "8JDUJpz3Xt9Ar1J0QJUy", userId: "1", title: "ttttt", location: "location",image: "", longitude: 5, latitude: 5));
+  // print(AuthenticationRemotDSImpl().isSignedIn());
+  // print(Firebase.apps.first);
+  runApp(MultiBlocProvider(
+    //create: (context) => AuthenticationBlocBloc(AuthenticationRemotDSImpl()),
+    providers: [
+      BlocProvider(
+        create: (context) =>
+            AuthenticationBlocBloc(AuthenticationRemotDSImpl()),
+      ),
+      BlocProvider(
+        create: (context) => PlaceBloc(PlaceRemotDSImpl()),
+      )
+    ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -17,16 +63,29 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         backgroundColor: const Color.fromARGB(255, 79, 78, 78),
         textTheme: TextTheme(
-          titleSmall: TextStyle(fontSize: 12,color: const Color.fromARGB(180, 255, 255, 255),),
-          
-          titleMedium: TextStyle(fontSize: 19,color: Colors.white,fontFamily: "UbuntuCondensed-Regular"),
-        labelMedium: TextStyle(color: Colors.white, fontSize: 22)),
+            bodyMedium: TextStyle(
+              fontFamily: "",
+              color: Color.fromARGB(206, 244, 67, 54),
+              fontWeight: FontWeight.w900,
+              fontSize: 50,
+            ),
+            titleSmall: TextStyle(
+              fontSize: 18,
+              fontFamily: "",
+              color: const Color.fromARGB(180, 255, 255, 255),
+            ),
+            titleMedium: TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+              //    fontFamily: "UbuntuCondensed-Regular"
+            ),
+            labelMedium: TextStyle(color: Colors.white, fontSize: 22)),
         primaryColor: Colors.black87,
         bottomAppBarColor: Colors.redAccent,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const FormPage(),
+      home: FormPage(),
     );
   }
 }
@@ -117,4 +176,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+@pragma("vm:entry-point")
+Future<void> onBackgroundMessage(RemoteMessage message) async {
+  print("background");
 }

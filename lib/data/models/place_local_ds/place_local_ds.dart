@@ -29,8 +29,8 @@ class PlaceLocalDSIml implements PlaceLocalDS {
       for (int i = 0; i < placesJson.length; i++) {
         final placeJson = placesJson[i];
         final Map placeMap = jsonDecode(placeJson);
-        final Place pet = Place.fromMap(placeMap);
-        places.add(pet);
+      //  final Place place = Place.fromDoc(placeMap);
+      //  places.add(place);
       }
     } catch (e) {
       print(e);
